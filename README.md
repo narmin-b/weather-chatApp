@@ -11,7 +11,6 @@ A SwiftUI-based iOS application that combines interactive weather mapping with r
 
 2. **Authentication**
    - Firebase-backed user registration and secure login.
-   - Persistent user sessions on device (UserDefaults storage for fast logins).
 
 3. **Real-time Peer-to-Peer Chat**
    - Browse other registered users in the app.
