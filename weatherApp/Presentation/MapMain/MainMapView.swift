@@ -143,7 +143,13 @@ struct MainMapView: View {
             }
         }
         .sheet(isPresented: $isSheetPresented) {
-            WeatherSheet(isPresented: $isSheetPresented, temp: $viewModel.temp, loc: $viewModel.locationName, weatherDescription: $viewModel.weatherDesc)
+            WeatherSheet(
+                isLoading: $viewModel.isLoading,
+                isPresented: $isSheetPresented,
+                temp: $viewModel.temp,
+                loc: $viewModel.locationName,
+                weatherDescription: $viewModel.weatherDesc
+            )
                 .modifier(GetHeightModifier(height: $sheetHeight))
                 .presentationDetents([.height(sheetHeight)])
                 .presentationBackgroundInteraction(.enabled)
@@ -158,7 +164,6 @@ struct MainMapView: View {
         }
     }
     
-   
     private func updateMapPosition() {
         position = .region(
             MKCoordinateRegion(

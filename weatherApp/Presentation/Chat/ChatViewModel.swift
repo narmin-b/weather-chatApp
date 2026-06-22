@@ -28,13 +28,13 @@ class ChatViewModel: ObservableObject {
         guard let currentUserID = UserDefaults.standard.string(forKey: "userId") else {
             return
         }
-
+        
         let chatID = [currentUserID, recieverUser.userID].sorted().joined(separator: "_")
         
         print("chatID: \(chatID)")
-
+        
         listener?.remove()
-
+        
         listener = db.collection("chats")
             .document(chatID)
             .collection("messages")
@@ -44,10 +44,10 @@ class ChatViewModel: ObservableObject {
                     print("Listen error: \(error.localizedDescription)")
                     return
                 }
-
+                
                 self.messages = snapshot?.documents.map { doc in
                     let data = doc.data()
-
+                    
                     return Message(
                         id: doc.documentID,
                         text: data["text"] as? String ?? "",
