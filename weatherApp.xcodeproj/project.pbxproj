@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		11A7C8222FE9062600741B2B /* MessagerUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A7C8212FE9061C00741B2B /* MessagerUser.swift */; };
+		11A7C8242FE92B2100741B2B /* UsersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A7C8232FE92B1B00741B2B /* UsersListView.swift */; };
+		11A7C8262FE943B000741B2B /* RecieverUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A7C8252FE943A900741B2B /* RecieverUser.swift */; };
 		11AC64182FE272210088BF31 /* OpenMeteoSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 11AC64172FE272210088BF31 /* OpenMeteoSdk */; };
 		11AC641E2FE273540088BF31 /* weatherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC641B2FE273540088BF31 /* weatherApp.swift */; };
 		11AC641F2FE273540088BF31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11AC64192FE273540088BF31 /* Assets.xcassets */; };
@@ -39,6 +41,8 @@
 
 /* Begin PBXFileReference section */
 		11A7C8212FE9061C00741B2B /* MessagerUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagerUser.swift; sourceTree = "<group>"; };
+		11A7C8232FE92B1B00741B2B /* UsersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListView.swift; sourceTree = "<group>"; };
+		11A7C8252FE943A900741B2B /* RecieverUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecieverUser.swift; sourceTree = "<group>"; };
 		11AC64082FE270220088BF31 /* weatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = weatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11AC64192FE273540088BF31 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11AC641B2FE273540088BF31 /* weatherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weatherApp.swift; sourceTree = "<group>"; };
@@ -198,6 +202,7 @@
 		11F100032FE3F5E1003ABB6D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				11A7C8252FE943A900741B2B /* RecieverUser.swift */,
 				11A7C8212FE9061C00741B2B /* MessagerUser.swift */,
 				11F1FFFB2FE3DF72003ABB6D /* Message.swift */,
 			);
@@ -232,10 +237,11 @@
 		11F1FFF02FE3D935003ABB6D /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				11F100032FE3F5E1003ABB6D /* Models */,
+				11A7C8232FE92B1B00741B2B /* UsersListView.swift */,
 				11F1FFFF2FE3E239003ABB6D /* ChatViewModel.swift */,
 				11F1FFEE2FE3D866003ABB6D /* ChatView.swift */,
 				11F100042FE3F5FC003ABB6D /* Views */,
+				11F100032FE3F5E1003ABB6D /* Models */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -339,7 +345,9 @@
 				11F1FFFE2FE3E02A003ABB6D /* AuthViewModel.swift in Sources */,
 				11A7C8222FE9062600741B2B /* MessagerUser.swift in Sources */,
 				11AC64262FE273AF0088BF31 /* MainMapView.swift in Sources */,
+				11A7C8262FE943B000741B2B /* RecieverUser.swift in Sources */,
 				11F1FFEF2FE3D86A003ABB6D /* ChatView.swift in Sources */,
+				11A7C8242FE92B2100741B2B /* UsersListView.swift in Sources */,
 				11F1000A2FE3FE3C003ABB6D /* WeatherSheet.swift in Sources */,
 				11AC642A2FE2745A0088BF31 /* LocationService.swift in Sources */,
 				11AC64662FE285B30088BF31 /* ServiceError.swift in Sources */,

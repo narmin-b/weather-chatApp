@@ -13,7 +13,7 @@ import SwiftUI
 class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var users: [MessagerUser] = []
-    var selectedUserID: String = ""
+    @Published var recieverUser: RecieverUser = RecieverUser(userID: "", userEmail: "")
     
     private let authService: AuthService
     
@@ -29,7 +29,9 @@ class ChatViewModel: ObservableObject {
             return
         }
 
-        let chatID = [currentUserID, selectedUserID].sorted().joined(separator: "_")
+        let chatID = [currentUserID, recieverUser.userID].sorted().joined(separator: "_")
+        
+        print("chatID: \(chatID)")
 
         listener?.remove()
 
@@ -58,13 +60,13 @@ class ChatViewModel: ObservableObject {
     }
     
     func sendMessage(text: String, senderID: String, senderMail: String) {
-        let chatID = [senderID, selectedUserID].sorted().joined(separator: "_")
+        let chatID = [senderID, recieverUser.userID].sorted().joined(separator: "_")
         
         let chatRef = db.collection("chats").document(chatID)
         
         chatRef.setData([
             "chatID": chatID,
-            "participants": [senderID, selectedUserID],
+            "participants": [senderID, recieverUser.userID],
             "lastMessage": text,
             "timestamp": Timestamp()
         ], merge: true)
@@ -72,7 +74,7 @@ class ChatViewModel: ObservableObject {
         chatRef.collection("messages").addDocument(data: [
             "text": text,
             "senderID": senderID,
-            "receiverID": selectedUserID,
+            "receiverID": recieverUser.userID,
             "senderMail": senderMail,
             "timestamp": Timestamp()
         ])

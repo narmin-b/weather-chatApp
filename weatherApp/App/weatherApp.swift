@@ -31,7 +31,7 @@ struct weatherApp: App {
                 
                 if isLoggedIn {
                     Tab("Chat", systemImage: "ellipsis.message.fill") {
-                        ChatView {
+                        UsersListView {
                             isLoggedIn = false
                         }
                     }
