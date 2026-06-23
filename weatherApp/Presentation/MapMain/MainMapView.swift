@@ -45,15 +45,6 @@ struct MainMapView: View {
         ZStack {
             MapReader { proxy in
                 Map(position: $position) {
-                    ForEach(locations) { location in
-                        Marker(
-                            location.name,
-                            coordinate: CLLocationCoordinate2D(
-                                latitude: location.latitude,
-                                longitude: location.longitude
-                            )
-                        )
-                    }
                     if newTapDetected {
                         Marker(
                             newLocation.name,
@@ -67,7 +58,7 @@ struct MainMapView: View {
                 }
                 .onTapGesture { position in
                     if let coordinate = proxy.convert(position, from: .local) {
-                        newLocation = Location(id: UUID(), name: "New location", description: "", latitude: coordinate.latitude, longitude: coordinate.longitude)
+                        newLocation = Location(id: UUID(), name: "Location", description: "", latitude: coordinate.latitude, longitude: coordinate.longitude)
                         newTapDetected = true
                         
                         Task {

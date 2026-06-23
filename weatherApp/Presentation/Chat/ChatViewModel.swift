@@ -13,7 +13,7 @@ import SwiftUI
 class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var users: [MessagerUser] = []
-    @Published var recieverUser: RecieverUser = RecieverUser(userID: "", userEmail: "")
+    @Published var recieverUser: ReceiverUser = ReceiverUser(userID: "", userEmail: "")
     
     private let authService: AuthService
     

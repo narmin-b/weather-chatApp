@@ -42,7 +42,7 @@ struct UsersListView: View {
                     Text("\(user.email)")
                         .onTapGesture {
                             isUserSelected = true
-                            chatViewModel.recieverUser = RecieverUser(userID: user.uid, userEmail: user.email)
+                            chatViewModel.recieverUser = ReceiverUser(userID: user.uid, userEmail: user.email)
                             print("reciever: \(chatViewModel.recieverUser)")
 //                            chatViewModel.startListening()
                         }
