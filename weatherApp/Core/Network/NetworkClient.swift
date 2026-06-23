@@ -22,17 +22,22 @@ final class NetworkClient {
             print("LOG: sending request: \(urlRequest)")
             (data, response) = try await URLSession.shared.data(for: urlRequest)
             print("LOG: received data: \(response)")
+        } catch let urlError as URLError {
+            if urlError.code == .notConnectedToInternet {
+                throw ServiceError.noInternet
+            } else {
+                throw ServiceError.unknown(urlError)
+            }
         } catch {
-            print("LOG: error: \(error)")
             throw ServiceError.unknown(error)
         }
-
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw ServiceError.unknown(NSError(domain: "Invalid response", code: 0))
         }
 
         guard (200..<300).contains(httpResponse.statusCode) else {
-            throw ServiceError.serverError(statusCode: httpResponse.statusCode)
+            throw ServiceError.invalidResponse(statusCode: httpResponse.statusCode)
         }
 
         do {

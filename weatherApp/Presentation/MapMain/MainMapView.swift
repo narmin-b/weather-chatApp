@@ -148,7 +148,8 @@ struct MainMapView: View {
                 isPresented: $isSheetPresented,
                 temp: $viewModel.temp,
                 loc: $viewModel.locationName,
-                weatherDescription: $viewModel.weatherDesc
+                weatherDescription: $viewModel.weatherDesc,
+                errorMessage: $viewModel.errorMessage
             )
                 .modifier(GetHeightModifier(height: $sheetHeight))
                 .presentationDetents([.height(sheetHeight)])

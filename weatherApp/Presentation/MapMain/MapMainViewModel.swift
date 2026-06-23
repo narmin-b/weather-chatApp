@@ -48,24 +48,30 @@ class MapMainViewModel: ObservableObject {
     
     // NETWORK FUNCS
     func getCurrentWeather(lat: Double, long: Double) async {
-            isLoading = true
-            errorMessage = nil
-
-            do {
-                let weather = try await client.send(GetCurrentForecast(lat: lat, long: long))
-                temp = weather.current.temperature2M
-                weatherDesc = getWeatherDescription(from: weather.current.weatherCode)
-            } catch {
-                errorMessage = "Failed to load users: \(error.localizedDescription)"
-            }
-
-            isLoading = false
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let weather = try await client.send(GetCurrentForecast(lat: lat, long: long))
+            temp = weather.current.temperature2M
+            weatherDesc = getWeatherDescription(from: weather.current.weatherCode)
+        } catch ServiceError.invalidResponse(let statusCode) {
+            errorMessage = "Server error: \(statusCode)"
+        } catch ServiceError.decodingError {
+            errorMessage = "Could not read weather data."
+        } catch ServiceError.noInternet {
+            errorMessage = "No internet connection."
+        } catch {
+            errorMessage = "Failed to load details: \(error.localizedDescription)"
         }
+        
+        isLoading = false
+    }
     
     @available(iOS 26.0, *)
     func getLocationName(lat: Double, lon: Double) async {
         let location = CLLocation(latitude: lat, longitude: lon)
-
+        
         guard let request = MKReverseGeocodingRequest(location: location) else {
             locationName = "Unknown location"
             return

@@ -13,10 +13,22 @@ struct WeatherSheet: View {
     @Binding var temp: Double?
     @Binding var loc: String?
     @Binding var weatherDescription: WeatherDescription?
+    @Binding var errorMessage: String?
     
     var body: some View {
         if isLoading {
-            ProgressView()
+            VStack {
+                Spacer()
+                ProgressView()
+                    .scaleEffect(4)
+                    .frame(minHeight: 120)
+                Spacer()
+            }
+        } else if !(errorMessage ?? "").isEmpty {
+            Text("\(errorMessage ?? "")")
+                .font(.system(size: 24))
+                .multilineTextAlignment(.center)
+                .frame(minHeight: 120)
         } else {
             ZStack {
                 VStack(spacing: 8) {
