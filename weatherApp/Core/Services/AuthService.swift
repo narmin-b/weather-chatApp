@@ -22,15 +22,6 @@ class AuthService: ObservableObject {
 
     
     init() {
-        firebaseAuth.addStateDidChangeListener() { auth, user in
-            if user != nil {
-                self.signedIn = true
-                print("Auth state changed, is signed in")
-            } else {
-                self.signedIn = false
-                print("Auth state changed, is signed out")
-            }
-        }
     }
     
     func regularCreateAccount(
