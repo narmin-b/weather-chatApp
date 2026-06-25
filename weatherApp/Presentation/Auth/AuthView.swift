@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AuthView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLogin: Bool = false
@@ -16,9 +17,7 @@ struct AuthView: View {
     @State private var alertMessage: String = ""
     
     @Namespace var attachmentViewerAnimation
-    
-    let onLogIn: () -> Void
-    
+        
     var body: some View {
         ZStack {
             Color.infoBG
@@ -69,40 +68,33 @@ struct AuthView: View {
                 .padding(.vertical, 12)
                 .animation(.spring(response: 0.3, dampingFraction: 0.85), value: password.isEmpty)
                 
-                if isLogin {
-                    Button("Login") {
+                //                if isLogin {
+                Button(isLogin ? "Login" : "Create an Account") {
+                    if isLogin {
                         authViewModel.login(email: email, password: password) { error in
                             if let error = error {
                                 isAlertShown = true
                                 alertMessage = "Login failed! \(error.localizedDescription)"
                             } else {
-                                onLogIn()
+                                coordinator.push(.usersList)
                             }
                         }
-                    }
-                    .padding(12)
-                    .background(Color.cloudy)
-                    .foregroundStyle(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding(.top, 12)
-                }
-                else {
-                    Button("Create an Account") {
+                    } else {
                         authViewModel.createAcc(email: email, password: password) { error in
                             if let error = error {
                                 isAlertShown = true
                                 alertMessage = "Register failed! \(error.localizedDescription)"
                             } else {
-                                onLogIn()
+                                coordinator.push(.usersList)
                             }
                         }
                     }
-                    .padding(12)
-                    .background(Color.cloudy)
-                    .foregroundStyle(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding(.top, 12)
                 }
+                .padding(12)
+                .background(Color.cloudy)
+                .foregroundStyle(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.top, 12)
                 
                 HStack(spacing: 2) {
                     if isLogin {

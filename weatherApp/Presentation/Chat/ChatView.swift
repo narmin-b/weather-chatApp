@@ -8,32 +8,28 @@
 import SwiftUI
 
 struct ChatView: View {
-    @EnvironmentObject var chatViewModel: ChatViewModel
-    @Environment(\.dismiss) private var dismiss
+    @StateObject private var chatViewModel: ChatViewModel
+    @EnvironmentObject private var coordinator: AppCoordinator
 
-    @State private var isUserSelected: Bool = false
     @State private var messageText = ""
+    @State private var isAlertShown = false
+    @State private var alertMessage = ""
 
-    var chatEmail: String = ""
-    
+    init(recieverUser: ReceiverUser) {
+        _chatViewModel = StateObject(
+            wrappedValue: ChatViewModel(recieverUser: recieverUser)
+        )
+    }
+
     var body: some View {
         VStack {
             HStack {
-                Image(systemName: "chevron.left")
+                Text(chatViewModel.recieverUser.userEmail)
                     .font(.system(size: 24))
-                    .onTapGesture {
-                        print("dismissed")
-                        dismiss()
-                    }
-                
-                Spacer()
-                
-                Text("\(chatViewModel.recieverUser.userEmail)")
-                    .font(.system(size: 24))
-                
+
                 Spacer()
             }
-            
+
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 8) {
                     ForEach(chatViewModel.messages) { message in
@@ -45,25 +41,44 @@ struct ChatView: View {
                     }
                 }
             }
-            
+
             HStack {
                 TextField("Message...", text: $messageText)
                     .textFieldStyle(.roundedBorder)
-                
+
                 Button("Send") {
-                    chatViewModel.sendMessage(
-                        text: messageText,
-                        senderID: UserDefaults.standard.string(forKey: "userId") ?? "",
-                        senderMail: UserDefaults.standard.string(forKey: "userEmail") ?? ""
-                    )
+                    let text = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                    guard !text.isEmpty else { return }
+
+                    chatViewModel.sendMessage(text: text) { error in
+                        if let error {
+                            isAlertShown = true
+                            alertMessage = error
+                        }
+                    }
+
                     messageText = ""
                 }
-                .disabled(UserDefaults.standard.string(forKey: "userId") == nil || messageText.isEmpty)
+                .disabled(
+                    UserDefaults.standard.string(forKey: "userId") == nil ||
+                    messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                )
             }
         }
-        .onAppear {
-            chatViewModel.startListening()
-        }
         .padding()
+        .alert("Error", isPresented: $isAlertShown) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(alertMessage)
+        }
+        .onAppear {
+            chatViewModel.startListening { error in
+                if let error {
+                    isAlertShown = true
+                    alertMessage = error
+                }
+            }
+        }
     }
 }

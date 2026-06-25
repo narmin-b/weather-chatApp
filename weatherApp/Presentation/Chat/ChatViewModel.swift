@@ -13,75 +13,62 @@ import SwiftUI
 class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var users: [MessagerUser] = []
-    @Published var recieverUser: ReceiverUser = ReceiverUser(userID: "", userEmail: "")
+    @Published var errorMessage: String?
+    @Published var recieverUser: ReceiverUser
     
     private let authService: AuthService
+    private let chatService: ChatService
     
-    init(authService: AuthService = AuthService()) {
+    init(
+        authService: AuthService = AuthService(),
+        chatService: ChatService = ChatService(),
+        recieverUser: ReceiverUser
+    ) {
+        self.recieverUser = recieverUser
         self.authService = authService
+        self.chatService = chatService
     }
     
-    private let db = Firestore.firestore()
-    private var listener: ListenerRegistration?
-    
-    func startListening() {
-        guard let currentUserID = UserDefaults.standard.string(forKey: "userId") else {
-            return
-        }
-        
-        let chatID = [currentUserID, recieverUser.userID].sorted().joined(separator: "_")
-        
-        print("chatID: \(chatID)")
-        
-        listener?.remove()
-        
-        listener = db.collection("chats")
-            .document(chatID)
-            .collection("messages")
-            .order(by: "timestamp")
-            .addSnapshotListener { snapshot, error in
-                if let error = error {
-                    print("Listen error: \(error.localizedDescription)")
-                    return
+    func startListening(completion: @escaping (String?) -> Void) {
+        chatService.startListening(
+            recieverUser: recieverUser,
+            onMessagesChanged: { [weak self] messages in
+                Task { @MainActor in
+                    self?.messages = messages
                 }
-                
-                self.messages = snapshot?.documents.map { doc in
-                    let data = doc.data()
-                    
-                    return Message(
-                        id: doc.documentID,
-                        text: data["text"] as? String ?? "",
-                        senderID: data["senderID"] as? String ?? "",
-                        senderMail: data["senderMail"] as? String ?? "",
-                        timestamp: (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
-                    )
-                } ?? []
+            },
+            completion: { [weak self] error in
+                Task { @MainActor in
+                    if let error {
+                        self?.errorMessage = error
+                        completion(error)
+                    }
+                }
             }
+        )
     }
     
-    func sendMessage(text: String, senderID: String, senderMail: String) {
-        let chatID = [senderID, recieverUser.userID].sorted().joined(separator: "_")
-        
-        let chatRef = db.collection("chats").document(chatID)
-        
-        chatRef.setData([
-            "chatID": chatID,
-            "participants": [senderID, recieverUser.userID],
-            "lastMessage": text,
-            "timestamp": Timestamp()
-        ], merge: true)
-        
-        chatRef.collection("messages").addDocument(data: [
-            "text": text,
-            "senderID": senderID,
-            "receiverID": recieverUser.userID,
-            "senderMail": senderMail,
-            "timestamp": Timestamp()
-        ])
+    func sendMessage(text: String, completion: @escaping (String?) -> Void) {
+        chatService.sendMessage(
+            text: text,
+            senderID: UserDefaults.standard.string(forKey: "userId") ?? "",
+            senderMail: UserDefaults.standard.string(forKey: "userEmail") ?? "",
+            recieverUser: recieverUser
+        ) { error in
+            if let error = error {
+                self.errorMessage = error
+                return
+            }
+        }
     }
     
-    func fetchAllUsers() async {
-        await authService.fetchUserLists()
+    func fetchAllUsers(completion: @escaping (String?) -> Void) async {
+        await authService.fetchUserLists { error in
+            if let error = error {
+                self.errorMessage = error
+                return
+            }
+        }
         users = authService.users
     }
 }

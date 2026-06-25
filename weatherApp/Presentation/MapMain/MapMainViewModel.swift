@@ -8,53 +8,98 @@
 import Combine
 import CoreLocation
 import MapKit
-import _MapKit_SwiftUI
 import SwiftUI
 
 @MainActor
-class MapMainViewModel: ObservableObject {
+final class MapMainViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let client = NetworkClient()
-    
-    private let defaultLocation = CLLocationCoordinate2D(latitude: 40.4092, longitude: 49.8670)
-    private let defaultZoomLevel: Double = 0.05
-    
+    private let locationManager = LocationManager()
+    private let defaultZoomLevel = 0.05
+
+    let defaultLocation = CLLocationCoordinate2D(
+        latitude: 40.4092,
+        longitude: 49.8670
+    )
+
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var locAuthStatus: LocAuthStatus = .notDetermined
     @Published var userLocation: CLLocationCoordinate2D?
     @Published var zoomLevel: Double
-    @Published var userAnnotation: UserLocationAnnotation?
-    @Published var isSharingLocation = false
     @Published var temp: Double?
     @Published var locationName: String?
     @Published var weatherDesc: WeatherDescription?
-    
+
+    @Published var selectedLocation = Location(
+        id: UUID(),
+        name: "",
+        description: "",
+        latitude: 0,
+        longitude: 0
+    )
+
     init() {
-        self.zoomLevel = defaultZoomLevel
+        zoomLevel = defaultZoomLevel
+
+        locationManager.$authorizationStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                self?.locAuthStatus = status
+            }
+            .store(in: &cancellables)
+
+        locationManager.$lastKnownLocation
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] coordinate in
+                guard let self else { return }
+
+                userLocation = coordinate
+                selectedLocation.latitude = coordinate.latitude
+                selectedLocation.longitude = coordinate.longitude
+            }
+            .store(in: &cancellables)
+
+        locationManager.$errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                guard let message else { return }
+                self?.errorMessage = message
+            }
+            .store(in: &cancellables)
     }
-    
-    private func updateUserAnnotation() {
-        guard let location = userLocation else { return }
-        userAnnotation = UserLocationAnnotation(coordinate: location, title: "You are here")
+
+    func requestUserLocation() {
+        errorMessage = nil
+        locationManager.requestLocation()
     }
-    
+
     func zoomIn() {
         zoomLevel = max(zoomLevel / 2, 0.002)
     }
-    
+
     func zoomOut() {
-        zoomLevel = min(zoomLevel * 2, 2.0)
+        zoomLevel = min(zoomLevel * 2, 6)
     }
-    
-    // NETWORK FUNCS
+
     func getCurrentWeather(lat: Double, long: Double) async {
         isLoading = true
         errorMessage = nil
-        
+
+        defer {
+            isLoading = false
+        }
+
         do {
-            let weather = try await client.send(GetCurrentForecast(lat: lat, long: long))
+            let weather = try await client.send(
+                GetCurrentForecast(lat: lat, long: long)
+            )
+
             temp = weather.current.temperature2M
-            weatherDesc = getWeatherDescription(from: weather.current.weatherCode)
+            weatherDesc = getWeatherDescription(
+                from: weather.current.weatherCode
+            )
         } catch ServiceError.invalidResponse(let statusCode) {
             errorMessage = "Server error: \(statusCode)"
         } catch ServiceError.decodingError {
@@ -64,8 +109,6 @@ class MapMainViewModel: ObservableObject {
         } catch {
             errorMessage = "Failed to load details: \(error.localizedDescription)"
         }
-        
-        isLoading = false
     }
     
     @available(iOS 26.0, *)
@@ -105,7 +148,7 @@ class MapMainViewModel: ObservableObject {
         
         geocoder.reverseGeocodeLocation(location) { placemarks, error in
             if let error = error {
-                print("Reverse geocoding failed:", error.localizedDescription)
+                self.locationName = "Unknown"
                 return
             }
             
@@ -126,7 +169,7 @@ class MapMainViewModel: ObservableObject {
                     loc = country
                 }
                 
-                self.locationName = loc ?? ""
+                self.locationName = loc
             }
         }
     }

@@ -10,16 +10,13 @@ import FirebaseCore
 import FirebaseAuth
 import Combine
 import FirebaseFirestore
-//import SwiftUI
 
 class AuthService: ObservableObject {
     private let db = Firestore.firestore()
     private let firebaseAuth = Auth.auth()
 
-
     @Published var signedIn: Bool = false
-    @Published var users = [MessagerUser]()
-
+    @Published var users: [MessagerUser] = []
     
     init() {
     }
@@ -85,7 +82,7 @@ class AuthService: ObservableObject {
         ])
     }
     
-    func fetchUserLists() async {
+    func fetchUserLists(completion: @escaping (String?) -> Void) async {
         do {
             let snapshot = try await db.collection("users").getDocuments()
             let currentUID = firebaseAuth.currentUser?.uid
@@ -95,16 +92,15 @@ class AuthService: ObservableObject {
                     return nil
                 }
 
-                return try? document.data(as: MessagerUser.self)
+                return try? document.data(as: MessagerUser.self) 
             }
 
             await MainActor.run {
                 self.users = fetchedUsers
                 print("users: \(self.users)")
             }
-
         } catch {
-            print("Error fetching users: \(error.localizedDescription)")
+            completion(error.localizedDescription)
         }
     }
 }

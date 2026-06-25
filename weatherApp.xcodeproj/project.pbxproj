@@ -15,7 +15,6 @@
 		11AC641F2FE273540088BF31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11AC64192FE273540088BF31 /* Assets.xcassets */; };
 		11AC64262FE273AF0088BF31 /* MainMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC64252FE273AC0088BF31 /* MainMapView.swift */; };
 		11AC642A2FE2745A0088BF31 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC64292FE2745A0088BF31 /* LocationService.swift */; };
-		11AC642D2FE274770088BF31 /* GetUserLocationUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC642C2FE274770088BF31 /* GetUserLocationUseCase.swift */; };
 		11AC64312FE274BA0088BF31 /* MapMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC64302FE274B50088BF31 /* MapMainViewModel.swift */; };
 		11AC64662FE285B30088BF31 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC64652FE285B30088BF31 /* ServiceError.swift */; };
 		11AC64682FE285C20088BF31 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AC64672FE285C20088BF31 /* Endpoint.swift */; };
@@ -37,6 +36,12 @@
 		11F1FFFA2FE3DF40003ABB6D /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 11F1FFF92FE3DF40003ABB6D /* FirebaseMessaging */; };
 		11F1FFFC2FE3DF75003ABB6D /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F1FFFB2FE3DF72003ABB6D /* Message.swift */; };
 		11F1FFFE2FE3E02A003ABB6D /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F1FFFD2FE3E026003ABB6D /* AuthViewModel.swift */; };
+		11F9D0072FECF7D100B202AA /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D0062FECF7C900B202AA /* ChatService.swift */; };
+		11F9D00A2FED09CB00B202AA /* NavigationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D0092FED09CB00B202AA /* NavigationTypes.swift */; };
+		11F9D00C2FED09EB00B202AA /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D00B2FED09EB00B202AA /* AppCoordinator.swift */; };
+		11F9D00E2FED0A0500B202AA /* CoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D00D2FED0A0500B202AA /* CoordinatorView.swift */; };
+		11F9D0102FED0A7B00B202AA /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D00F2FED0A7B00B202AA /* MainTabView.swift */; };
+		11F9D0122FED288400B202AA /* UsersListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F9D0112FED288400B202AA /* UsersListViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,7 +53,6 @@
 		11AC641B2FE273540088BF31 /* weatherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weatherApp.swift; sourceTree = "<group>"; };
 		11AC64252FE273AC0088BF31 /* MainMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMapView.swift; sourceTree = "<group>"; };
 		11AC64292FE2745A0088BF31 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		11AC642C2FE274770088BF31 /* GetUserLocationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserLocationUseCase.swift; sourceTree = "<group>"; };
 		11AC64302FE274B50088BF31 /* MapMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapMainViewModel.swift; sourceTree = "<group>"; };
 		11AC64652FE285B30088BF31 /* ServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
 		11AC64672FE285C20088BF31 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
@@ -67,6 +71,13 @@
 		11F1FFFB2FE3DF72003ABB6D /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		11F1FFFD2FE3E026003ABB6D /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		11F1FFFF2FE3E239003ABB6D /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		11F9D0052FEBA2D300B202AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		11F9D0062FECF7C900B202AA /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
+		11F9D0092FED09CB00B202AA /* NavigationTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTypes.swift; sourceTree = "<group>"; };
+		11F9D00B2FED09EB00B202AA /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		11F9D00D2FED0A0500B202AA /* CoordinatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatorView.swift; sourceTree = "<group>"; };
+		11F9D00F2FED0A7B00B202AA /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		11F9D0112FED288400B202AA /* UsersListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +115,7 @@
 		11AC641C2FE273540088BF31 /* weatherApp */ = {
 			isa = PBXGroup;
 			children = (
+				11F9D0052FEBA2D300B202AA /* Info.plist */,
 				11AC64202FE273600088BF31 /* App */,
 				11AC64222FE2737A0088BF31 /* Core */,
 				11AC64212FE273700088BF31 /* Presentation */,
@@ -118,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				11AC641B2FE273540088BF31 /* weatherApp.swift */,
+				11F9D00D2FED0A0500B202AA /* CoordinatorView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -135,7 +148,7 @@
 		11AC64222FE2737A0088BF31 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				11AC642B2FE2746E0088BF31 /* Domains */,
+				11F9D0082FED09C200B202AA /* Coordinator */,
 				11AC64282FE273F50088BF31 /* Services */,
 				11AC64272FE273BC0088BF31 /* Network */,
 			);
@@ -174,18 +187,11 @@
 		11AC64282FE273F50088BF31 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				11F9D0062FECF7C900B202AA /* ChatService.swift */,
 				11B97BDB2FE5143100A4C3F6 /* AuthService.swift */,
 				11AC64292FE2745A0088BF31 /* LocationService.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		11AC642B2FE2746E0088BF31 /* Domains */ = {
-			isa = PBXGroup;
-			children = (
-				11AC642C2FE274770088BF31 /* GetUserLocationUseCase.swift */,
-			);
-			path = Domains;
 			sourceTree = "<group>";
 		};
 		11AC642E2FE2749B0088BF31 /* MapMain */ = {
@@ -237,9 +243,10 @@
 		11F1FFF02FE3D935003ABB6D /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				11F9D0112FED288400B202AA /* UsersListViewModel.swift */,
 				11A7C8232FE92B1B00741B2B /* UsersListView.swift */,
-				11F1FFFF2FE3E239003ABB6D /* ChatViewModel.swift */,
 				11F1FFEE2FE3D866003ABB6D /* ChatView.swift */,
+				11F1FFFF2FE3E239003ABB6D /* ChatViewModel.swift */,
 				11F100042FE3F5FC003ABB6D /* Views */,
 				11F100032FE3F5E1003ABB6D /* Models */,
 			);
@@ -251,6 +258,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		11F9D0082FED09C200B202AA /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				11F9D00F2FED0A7B00B202AA /* MainTabView.swift */,
+				11F9D00B2FED09EB00B202AA /* AppCoordinator.swift */,
+				11F9D0092FED09CB00B202AA /* NavigationTypes.swift */,
+			);
+			path = Coordinator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -336,19 +353,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				11AC646C2FE287AD0088BF31 /* NetworkClient.swift in Sources */,
+				11F9D00E2FED0A0500B202AA /* CoordinatorView.swift in Sources */,
 				11AC64682FE285C20088BF31 /* Endpoint.swift in Sources */,
-				11AC642D2FE274770088BF31 /* GetUserLocationUseCase.swift in Sources */,
+				11F9D00C2FED09EB00B202AA /* AppCoordinator.swift in Sources */,
 				11AC64312FE274BA0088BF31 /* MapMainViewModel.swift in Sources */,
 				11F100082FE3FE29003ABB6D /* WeatherDescription.swift in Sources */,
+				11F9D0072FECF7D100B202AA /* ChatService.swift in Sources */,
 				11B97BDC2FE5143100A4C3F6 /* AuthService.swift in Sources */,
 				11B97BDA2FE5131C00A4C3F6 /* AuthView.swift in Sources */,
 				11F1FFFE2FE3E02A003ABB6D /* AuthViewModel.swift in Sources */,
+				11F9D0122FED288400B202AA /* UsersListViewModel.swift in Sources */,
+				11F9D0102FED0A7B00B202AA /* MainTabView.swift in Sources */,
 				11A7C8222FE9062600741B2B /* MessagerUser.swift in Sources */,
 				11AC64262FE273AF0088BF31 /* MainMapView.swift in Sources */,
 				11A7C8262FE943B000741B2B /* ReceiverUser.swift in Sources */,
 				11F1FFEF2FE3D86A003ABB6D /* ChatView.swift in Sources */,
 				11A7C8242FE92B2100741B2B /* UsersListView.swift in Sources */,
 				11F1000A2FE3FE3C003ABB6D /* WeatherSheet.swift in Sources */,
+				11F9D00A2FED09CB00B202AA /* NavigationTypes.swift in Sources */,
 				11AC642A2FE2745A0088BF31 /* LocationService.swift in Sources */,
 				11AC64662FE285B30088BF31 /* ServiceError.swift in Sources */,
 				11F100022FE3E5D9003ABB6D /* MessageBubble.swift in Sources */,
@@ -495,6 +517,9 @@
 				DEVELOPMENT_TEAM = 5V565SJ9S9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = weatherApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show local weather.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -532,6 +557,9 @@
 				DEVELOPMENT_TEAM = 5V565SJ9S9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = weatherApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show local weather.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

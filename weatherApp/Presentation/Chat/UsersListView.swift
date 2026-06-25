@@ -9,13 +9,13 @@ import SwiftUI
 
 struct UsersListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var chatViewModel = ChatViewModel()
+    @EnvironmentObject private var coordinator: AppCoordinator
+    @StateObject private var usersViewModel = UsersListViewModel()
+
     @State private var isAlertShown: Bool = false
     @State private var isUserSelected: Bool = false
     @State private var alertMessage: String = ""
-    
-    let onSignOut: () -> Void
-    
+        
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -26,7 +26,7 @@ struct UsersListView: View {
                             isAlertShown = true
                             alertMessage = "Sign out failed! \(error.localizedDescription)"
                         } else {
-                            onSignOut()
+                            coordinator.pop()
                         }
                     }
                 }
@@ -37,18 +37,13 @@ struct UsersListView: View {
                 .font(.system(.largeTitle))
                 .padding()
             
-            List {
-                ForEach(chatViewModel.users, id: \.self) { user in
-                    Text("\(user.email)")
-                        .onTapGesture {
-                            isUserSelected = true
-                            chatViewModel.recieverUser = ReceiverUser(userID: user.uid, userEmail: user.email)
-                            print("reciever: \(chatViewModel.recieverUser)")
-//                            chatViewModel.startListening()
+            List(usersViewModel.users) { user in
+                        Button {
+                            coordinator.push(.chat(user: ReceiverUser(userID: user.id, userEmail: user.email)))
+                        } label: {
+                            Text(user.email)
                         }
-                }
-            }
-            .background(Color.clear)
+                    }
             
             Spacer()
         }
@@ -56,14 +51,14 @@ struct UsersListView: View {
         }, message: {
             Text(alertMessage)
         })
-        .sheet(
-            isPresented: $isUserSelected,
-        ) {
-            ChatView()
-                .environmentObject(chatViewModel)
-        }
         .task {
-            await chatViewModel.fetchAllUsers()
+            await usersViewModel.fetchAllUsers() { error in
+                if let error = error {
+                    isAlertShown = true
+                    alertMessage = error
+                }
+            }
         }
+        .navigationBarBackButtonHidden()
     }
 }

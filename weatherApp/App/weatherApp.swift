@@ -17,33 +17,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct weatherApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var authViewModel = AuthViewModel()
-    @State private var isLoggedIn: Bool = false
+struct WeatherApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+    private var delegate
     
     var body: some Scene {
         WindowGroup {
-            TabView {
-                Tab("Map", systemImage: "map.fill") {
-                    MainMapView()
-                }
-                
-                if isLoggedIn {
-                    Tab("Chat", systemImage: "ellipsis.message.fill") {
-                        UsersListView {
-                            isLoggedIn = false
-                        }
-                    }
-                } else {
-                    Tab("Auth", systemImage: "person") {
-                        AuthView {
-                            isLoggedIn = true
-                        }
-                    }
-                }
-            }
-            .environmentObject(authViewModel)
+            CoordinatorView()
         }
     }
 }
+

@@ -8,6 +8,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import Combine
 
 struct Location: Codable, Equatable, Identifiable {
     let id: UUID
@@ -17,121 +18,145 @@ struct Location: Codable, Equatable, Identifiable {
     var longitude: Double
 }
 
+import SwiftUI
+import MapKit
+import CoreLocation
+
 struct MainMapView: View {
     @StateObject private var viewModel = MapMainViewModel()
-    @State private var locations = [Location]()
+
     @State private var position: MapCameraPosition
-    @State private var newTapDetected: Bool = false
+    @State private var newTapDetected = false
     @State private var isSheetPresented = false
     @State private var sheetHeight: CGFloat = .zero
-    @State private var newLocation: Location = Location(
-        id: UUID(),
-        name: "",
-        description: "",
-        latitude: 0,
-        longitude: 0
-    )
-    
+    @State private var isAlertShown = false
+    @State private var alertMessage = ""
+
     init() {
-        let defaultRegion = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 40.4092, longitude: 49.8670),
-            span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: 40.4092,
+                longitude: 49.8670
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05
+            )
         )
-        
-        _position = State(initialValue: .region(defaultRegion))
+
+        _position = State(initialValue: .region(region))
     }
-    
+
     var body: some View {
         ZStack {
             MapReader { proxy in
                 Map(position: $position) {
                     if newTapDetected {
                         Marker(
-                            newLocation.name,
+                            viewModel.selectedLocation.name,
                             coordinate: CLLocationCoordinate2D(
-                                latitude: newLocation.latitude,
-                                longitude: newLocation.longitude
+                                latitude: viewModel.selectedLocation.latitude,
+                                longitude: viewModel.selectedLocation.longitude
                             )
                         )
                         .tint(.blue)
                     }
                 }
-                .onTapGesture { position in
-                    if let coordinate = proxy.convert(position, from: .local) {
-                        newLocation = Location(id: UUID(), name: "Location", description: "", latitude: coordinate.latitude, longitude: coordinate.longitude)
-                        newTapDetected = true
-                        
-                        Task {
-                            await viewModel.getCurrentWeather(lat: newLocation.latitude, long: newLocation.longitude)
-                            await viewModel.getLocationName(lat: newLocation.latitude, lon: newLocation.longitude)
-                        }
-                        
-                        isSheetPresented = true
+                .onTapGesture { tapPosition in
+                    guard let coordinate = proxy.convert(
+                        tapPosition,
+                        from: .local
+                    ) else {
+                        return
                     }
+
+                    viewModel.selectedLocation = Location(
+                        id: UUID(),
+                        name: "Location",
+                        description: "",
+                        latitude: coordinate.latitude,
+                        longitude: coordinate.longitude
+                    )
+
+                    showLocation(coordinate)
                 }
                 .ignoresSafeArea()
             }
-            .onAppear {
-                position = .region(
-                    MKCoordinateRegion(
-                        center: viewModel.userLocation ?? CLLocationCoordinate2D(
-                            latitude: 40.4092,
-                            longitude: 49.8670
-                        ),
-                        span: MKCoordinateSpan(
-                            latitudeDelta: viewModel.zoomLevel,
-                            longitudeDelta: viewModel.zoomLevel
-                        )
-                    )
-                )
-            }
-            
+
             VStack {
                 Spacer()
+
                 HStack {
                     Spacer()
+
                     VStack {
-                        Button(action: {
+                        Button {
                             viewModel.zoomIn()
-                            updateMapPosition()
-                        }) {
+                            updateMapPosition(
+                                center: currentMapCenter
+                            )
+                        } label: {
                             Image(systemName: "plus.magnifyingglass")
                                 .padding()
                                 .background(Color.white)
                                 .clipShape(Circle())
                                 .shadow(radius: 4)
                         }
-                        
-                        Button(action: {
+
+                        Button {
                             viewModel.zoomOut()
-                            updateMapPosition()
-                        }) {
+                            updateMapPosition(
+                                center: currentMapCenter
+                            )
+                        } label: {
                             Image(systemName: "minus.magnifyingglass")
                                 .padding()
                                 .background(Color.white)
                                 .clipShape(Circle())
                                 .shadow(radius: 4)
                         }
-                        
-//                        Button(action: {
-//                            locations.append(newLocation)
-//                        }) {
-//                            Image(systemName: "plus")
-//                                .padding()
-//                                .background(Color.white)
-//                                .clipShape(Circle())
-//                                .shadow(radius: 4)
-//                        }
-//                        .onAppear {
-//                            newTapDetected = false
-//                            isSheetPresented = false
-//                            
-//                        }
+
+                        Button {
+                            viewModel.requestUserLocation()
+                        } label: {
+                            Image(systemName: "location.circle")
+                                .padding()
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
+                        }
                     }
                     .padding()
                 }
-                .padding(.bottom, isSheetPresented ? sheetHeight-50 : sheetHeight)
+                .padding(
+                    .bottom,
+                    isSheetPresented ? sheetHeight - 50 : sheetHeight
+                )
             }
+        }
+        .onReceive(
+            viewModel.$userLocation.compactMap { $0 }
+        ) { coordinate in
+            viewModel.selectedLocation = Location(
+                id: UUID(),
+                name: "Current location",
+                description: "",
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude
+            )
+//            showLocation(coordinate)
+        }
+        .onReceive(
+            viewModel.$errorMessage.compactMap { $0 }
+        ) { message in
+            alertMessage = message
+            isAlertShown = true
+            isSheetPresented = false
+        }
+        .alert("Error", isPresented: $isAlertShown) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(alertMessage)
         }
         .sheet(isPresented: $isSheetPresented) {
             WeatherSheet(
@@ -142,34 +167,58 @@ struct MainMapView: View {
                 weatherDescription: $viewModel.weatherDesc,
                 errorMessage: $viewModel.errorMessage
             )
-                .modifier(GetHeightModifier(height: $sheetHeight))
-                .presentationDetents([.height(sheetHeight)])
-                .presentationBackgroundInteraction(.enabled)
-                .presentationDragIndicator(.visible)
-                .presentationBackground(Color.infoBG)
-                .onDisappear {
-                    withAnimation(.smooth) {
-                        sheetHeight = 0
-                    }
-                    isSheetPresented = false
-                }
+            .modifier(GetHeightModifier(height: $sheetHeight))
+            .presentationDetents([.height(sheetHeight)])
+            .presentationBackgroundInteraction(.enabled)
+            .presentationDragIndicator(.visible)
+            .presentationBackground(Color.infoBG)
+            .onDisappear {
+                isSheetPresented = false
+            }
         }
     }
-    
-    private func updateMapPosition() {
+
+    private var currentMapCenter: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(
+            latitude: viewModel.selectedLocation.latitude,
+            longitude: viewModel.selectedLocation.longitude
+        )
+    }
+
+    private func showLocation(
+        _ coordinate: CLLocationCoordinate2D
+    ) {
+        newTapDetected = true
+        updateMapPosition(center: coordinate)
+
+        Task {
+            await viewModel.getCurrentWeather(
+                lat: coordinate.latitude,
+                long: coordinate.longitude
+            )
+
+            viewModel.getLocationName(
+                lat: coordinate.latitude,
+                lon: coordinate.longitude
+            )
+        }
+
+        isSheetPresented = true
+    }
+
+    private func updateMapPosition(
+        center: CLLocationCoordinate2D
+    ) {
         position = .region(
             MKCoordinateRegion(
-                center: viewModel.userLocation ?? CLLocationCoordinate2D(
-                    latitude: newLocation.latitude,
-                    longitude: newLocation.longitude
-                ),
+                center: center,
                 span: MKCoordinateSpan(
                     latitudeDelta: viewModel.zoomLevel,
                     longitudeDelta: viewModel.zoomLevel
                 )
             )
         )
-    }    
+    }
 }
 
 struct UserLocationAnnotation: Identifiable {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ReceiverUser {
+struct ReceiverUser: Hashable {
     let userID: String
     let userEmail: String
 }

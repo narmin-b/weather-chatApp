@@ -7,8 +7,11 @@
 
 import Foundation
 
-struct MessagerUser: Codable, Hashable {
-    let uid: String
-    let email: String
-}
+struct MessagerUser: Identifiable, Codable, Hashable {
+    var uid: String
+    var email: String
 
+    var id: String {
+        uid
+    }
+}

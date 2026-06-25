@@ -49,7 +49,7 @@ class AuthViewModel: ObservableObject {
                 completion(error)
             } else {
                 UserDefaults.standard.set(nil, forKey: "userId")
-                UserDefaults.standard.set(Auth.auth().currentUser?.email, forKey: "userEmail")
+                UserDefaults.standard.set(nil, forKey: "userEmail")
                 completion(nil)
             }
         }
