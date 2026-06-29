@@ -15,106 +15,28 @@ struct AuthView: View {
     @State private var isLogin: Bool = false
     @State private var isAlertShown: Bool = false
     @State private var alertMessage: String = ""
-    
-    @Namespace var attachmentViewerAnimation
-        
+            
     var body: some View {
         ZStack {
-            Color.infoBG
+            backgroundColor
                 .ignoresSafeArea()
-                .opacity(0.5)
             
             VStack(spacing: 2) {
-                Text( isLogin ? "To continue with chat,\n please log in" : "To start a chat,\n please register")
-                    .font(.system(size: 28, weight: .semibold))
-                    .multilineTextAlignment(.center)
+                headerText
                     .padding(.top, 64)
                 
                 Spacer()
                 
-                ZStack(alignment: .leading) {
-                    Text("Email")
-                        .foregroundStyle(email.isEmpty ? .gray : .primary)
-                        .padding(.leading, 16)
-                        .font(.system(size: 16))
-                        .scaleEffect(email.isEmpty ? 1 : 0.85, anchor: .leading)
-                        .offset(y: email.isEmpty ? 0 : -32)
-                    TextField("", text: $email)
-                        .padding(12)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.black, lineWidth: 1)
-                        )
-                }
-                .padding(.vertical, 12)
-                .animation(.spring(response: 0.3, dampingFraction: 0.85), value: email.isEmpty)
-               
-                ZStack(alignment: .leading) {
-                    Text("Password")
-                        .foregroundStyle(password.isEmpty ? .gray : .primary)
-                        .padding(.leading, 16)
-                        .font(.system(size: 16))
-                        .scaleEffect(password.isEmpty ? 1 : 0.85, anchor: .leading)
-                        .offset(y: password.isEmpty ? 0 : -32)
-                    SecureField("", text: $password)
-                        .padding(12)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.black, lineWidth: 1)
-                        )
-                }
-                .padding(.vertical, 12)
-                .animation(.spring(response: 0.3, dampingFraction: 0.85), value: password.isEmpty)
+                emailField
+                    .padding(.vertical, 12)
+                passwordField
+                    .padding(.vertical, 12)
                 
-                //                if isLogin {
-                Button(isLogin ? "Login" : "Create an Account") {
-                    if isLogin {
-                        authViewModel.login(email: email, password: password) { error in
-                            if let error = error {
-                                isAlertShown = true
-                                alertMessage = "Login failed! \(error.localizedDescription)"
-                            } else {
-                                coordinator.push(.usersList)
-                            }
-                        }
-                    } else {
-                        authViewModel.createAcc(email: email, password: password) { error in
-                            if let error = error {
-                                isAlertShown = true
-                                alertMessage = "Register failed! \(error.localizedDescription)"
-                            } else {
-                                coordinator.push(.usersList)
-                            }
-                        }
-                    }
-                }
-                .padding(12)
-                .background(Color.cloudy)
-                .foregroundStyle(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.top, 12)
+                authButton
+                    .padding(.top, 12)
                 
-                HStack(spacing: 2) {
-                    if isLogin {
-                        Text("Don't have an account? ")
-                        Text("Register")
-                            .foregroundStyle(.cloudy)
-                            .onTapGesture {
-                                isLogin.toggle()
-                            }
-                    } else {
-                        Text("Already have an account? ")
-                        Text("Login")
-                            .foregroundStyle(.cloudy)
-                            .onTapGesture {
-                                isLogin.toggle()
-                            }
-                    }
-                }
-                .padding(.top, 12)
-                .frame(maxWidth: .infinity, alignment: .center)
+                redirectSection
+                    .padding(.top, 12)
                 
                 Spacer()
             }
@@ -124,5 +46,110 @@ struct AuthView: View {
         }, message: {
             Text(alertMessage)
         })
+    }
+    
+    //MARK: Components
+    var backgroundColor: some View {
+        Color.infoBG
+            .opacity(0.5)
+    }
+    
+    var headerText: some View {
+        Text(isLogin
+            ? "To continue with chat,\n please log in"
+            : "To start a chat,\n please register"
+        )
+            .font(.system(size: 28, weight: .semibold))
+            .multilineTextAlignment(.center)
+    }
+    
+    var emailField: some View {
+        ZStack(alignment: .leading) {
+            Text("Email")
+                .foregroundStyle(email.isEmpty ? .gray : .primary)
+                .padding(.leading, 16)
+                .font(.system(size: 16))
+                .scaleEffect(email.isEmpty ? 1 : 0.85, anchor: .leading)
+                .offset(y: email.isEmpty ? 0 : -32)
+            TextField("", text: $email)
+                .padding(12)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.black, lineWidth: 1)
+                )
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.85), value: email.isEmpty)
+    }
+    
+    var passwordField: some View {
+        ZStack(alignment: .leading) {
+            Text("Password")
+                .foregroundStyle(password.isEmpty ? .gray : .primary)
+                .padding(.leading, 16)
+                .font(.system(size: 16))
+                .scaleEffect(password.isEmpty ? 1 : 0.85, anchor: .leading)
+                .offset(y: password.isEmpty ? 0 : -32)
+            SecureField("", text: $password)
+                .padding(12)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.black, lineWidth: 1)
+                )
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.85), value: password.isEmpty)
+    }
+    
+    var authButton: some View {
+        Button(isLogin ? "Login" : "Create an Account") {
+            Task { @MainActor in
+                do {
+                    if isLogin {
+                        try await authViewModel.login(
+                            email: email,
+                            password: password
+                        )
+                    } else {
+                        try await authViewModel.createAcc(
+                            email: email,
+                            password: password
+                        )
+                    }
+
+                    coordinator.push(.usersList)
+                } catch {
+                    isAlertShown = true
+                    alertMessage = isLogin
+                        ? "Login failed! \(error.localizedDescription)"
+                        : "Registration failed! \(error.localizedDescription)"
+                }
+            }
+        }
+        .padding(12)
+        .background(Color.cloudy)
+        .foregroundStyle(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+    
+    var redirectSection: some View {
+        HStack(spacing: 2) {
+            if isLogin {
+                Text("Don't have an account? ")
+                Text("Register")
+                    .foregroundStyle(.cloudy)
+                    .onTapGesture {
+                        isLogin.toggle()
+                    }
+            } else {
+                Text("Already have an account? ")
+                Text("Login")
+                    .foregroundStyle(.cloudy)
+                    .onTapGesture {
+                        isLogin.toggle()
+                    }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }

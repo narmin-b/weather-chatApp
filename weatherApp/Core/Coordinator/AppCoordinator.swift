@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import AppServices
 
 @MainActor
 final class AppCoordinator: ObservableObject {
@@ -32,7 +33,7 @@ final class AppCoordinator: ObservableObject {
             MainTabView()
         case .chat(let user):
             ChatView(
-                recieverUser: ReceiverUser(
+                recieverUser: RecieverUser(
                     userID: user.userID,
                     userEmail: user.userEmail
                 )

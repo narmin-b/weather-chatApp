@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import AppServices
 
 enum AppPage: Hashable {
     case main
     case usersList
-    case chat(user: ReceiverUser)
+    case chat(user: RecieverUser)
 }

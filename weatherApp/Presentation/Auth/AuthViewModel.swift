@@ -6,52 +6,73 @@
 //
 
 import Foundation
-import FirebaseAuth
 import Combine
-import SwiftUI
+import AppServices
 
-class AuthViewModel: ObservableObject {
+@MainActor
+final class AuthViewModel: ObservableObject {
     private let authService: AuthService
     
-    init(authService: AuthService = AuthService()) {
-        self.authService = authService
+    init(authService: AuthService? = nil) {
+        self.authService = authService ?? AuthService()
     }
     
-    func createAcc(email: String, password: String, completion: @escaping (Error?) -> Void) {
-        authService.regularCreateAccount(email: email, password: password) { error in
-            if let error = error {
-                print("Sign in failed:", error.localizedDescription)
-                completion(error)
-            } else {
-                UserDefaults.standard.set(Auth.auth().currentUser?.uid, forKey: "userId")
-                completion(nil)
-            }
+    func createAcc(
+        email: String,
+        password: String
+    ) async throws {
+        do {
+            try await authService.createAccount(
+                email: email,
+                password: password
+            )
+
+            saveCurrentUser()
+        } catch {
+            print(
+                "Account creation failed:",
+                error.localizedDescription
+            )
+            throw error
         }
     }
-    
-    func login(email: String, password: String, completion: @escaping (Error?) -> Void) {
-        authService.regularSignIn(email: email, password: password) { error in
-            if let error = error {
-                print("Log in failed:", error.localizedDescription)
-                completion(error)
-            } else {
-                UserDefaults.standard.set(Auth.auth().currentUser?.uid, forKey: "userId")
-                UserDefaults.standard.set(Auth.auth().currentUser?.email, forKey: "userEmail")
-                completion(nil)
-            }
+
+    func login(
+        email: String,
+        password: String
+    ) async throws {
+        do {
+            try await authService.signIn(
+                email: email,
+                password: password
+            )
+
+            saveCurrentUser()
+        } catch {
+            print(
+                "Login failed:",
+                error.localizedDescription
+            )
+            throw error
         }
     }
-    
-    func signOut(completion: @escaping (Error?) -> Void) {
-        authService.regularSignOut { error in
-            if let error = error {
-                print("Sign out failed:", error.localizedDescription)
-                completion(error)
-            } else {
-                UserDefaults.standard.set(nil, forKey: "userId")
-                UserDefaults.standard.set(nil, forKey: "userEmail")
-                completion(nil)
-            }
-        }
+
+    func signOut() throws {
+        try authService.signOut()
+
+        UserDefaults.standard.removeObject(forKey: "userId")
+        UserDefaults.standard.removeObject(forKey: "userEmail")
+    }
+
+    private func saveCurrentUser() {
+        UserDefaults.standard.set(
+            authService.currentUserID,
+            forKey: "userId"
+        )
+
+        UserDefaults.standard.set(
+            authService.currentUserEmail,
+            forKey: "userEmail"
+        )
     }
 }

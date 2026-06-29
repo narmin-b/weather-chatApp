@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppServices
 
 struct MessageBubble: View {
     let message: Message
@@ -16,8 +17,6 @@ struct MessageBubble: View {
         HStack {
             if isMe { Spacer() }
             VStack(alignment: isMe ? .trailing : .leading, spacing: 2) {
-//                Text("\(userMail)")
-//                    .font(.system(size: 12))
                 Text(message.text)
                     .padding(8)
                     .background(isMe ? Color.blue : Color.green)
